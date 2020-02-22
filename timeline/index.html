@@ -8,7 +8,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.1/react.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.1/react-dom.min.js"></script>
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://unpkg.com/moment@2.24.0/min/moment.min.js"></script>
     <link href="./style.css" rel="stylesheet" type="text/css" />
+    <script src="./data.js"></script>
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
         type="text/css" />
 </head>
@@ -19,20 +21,32 @@
             <div id="app"></div>
         </div>
     </div>
+    
     <script type="text/babel">
 
         class Content extends React.Component {
-            render() {
-                const { activities } = this.props;
+            constructor(props){
+                super(props);
 
+                this.state = {
+                    activities: []
+
+                };
+            }
+            componentWillMount(){
+                this.setState({activities: data});
+
+            }
+            render() {
+                const { activities } = this.state;
                 return (
                     <div className="content">
                         <div className="line"></div>
                         {activities.map(activity => (
                 <ActivityItem activity={activity} />
               ))}
-                    </div>
-                );
+            </div>
+          );
             }
         }
 
@@ -41,42 +55,21 @@
                 const {activity} = this.props;
                 return (
                     <div className="item">
-                        <div className="avatar">
+                        <div className={"avatar"}>
                             <img alt=
-                                {activity.text} src={activity.user.avatar} />
-                            {activity.user.name}
+                                'avatar' src={activity.actor.avatar_url} />
                         </div>
 
-                        <span className="time">{activity.timestamp}</span>
-                        <p>{activity.text}</p>
-                        <div className="commentCount">{activity.comments.length}</div>
+                        <span className="time">{moment(activity.created_at).fromNow()}</span>
+                        <p>{activity.actor.display_login} {activity.payload.action}</p>
+                        <div className={'right'}>{activity.repo.name}</div>
                     </div>
                 );
             }
         }
 
-        const entry = [
-            {
-                timestamp: new Date().getTime(),
-                text: "Ate lunch",
-                user: {
-                    id: 1, name: 'Nate',
-                    avatar: "http://www.croop.cl/UI/twitter/images/doug.jpg"
-                },
-                comments: [{ from: 'Ari', text: 'Me too!' }]
-            },
-            {
-                timestamp: new Date().getTime(),
-                text: "Woke up early for a beautiful run",
-                user: {
-                    id: 2, name: 'Ari',
-                    avatar: "http://www.croop.cl/UI/twitter/images/doug.jpg"
-                },
-                comments: [{ from: 'Nate', text: 'I am so jealous' }]
-            },
-        ]
         var mount = document.querySelector('#app');
-        ReactDOM.render(<Content activities={entry} />, mount);
+        ReactDOM.render(<Content />, mount);
     </script>
 
 </body>
